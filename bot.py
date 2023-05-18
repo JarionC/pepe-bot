@@ -1,69 +1,60 @@
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 import random
+import asyncio
+from telegram import Bot, Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import CommandHandler, CallbackContext
 
-# Bot's token
-updater = Updater(token="5704485196:AAFCQCxyqm85sI-In90d7FQcJ8qDqWELUSw", use_context=True)
+bot = Bot(token="5704485196:AAFCQCxyqm85sI-In90d7FQcJ8qDqWELUSw")
+update_queue = asyncio.Queue()
+updater = Updater(bot=bot, update_queue=update_queue)
 
-# List of meme URLs
-memes = [
-    "https://yourserver.com/meme1.jpg",
-    "https://yourserver.com/meme2.jpg",
-    "https://yourserver.com/meme3.jpg",
-    # Add as many memes as you want...
-]
+# List of memes (these can be links to images, or text memes)
+memes = ["Meme 1", "Meme 2", "Meme 3", "...", "Meme n"]
 
-# A function to show greetings
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text('Hola, amigo! I am Peso-bot, your friendly guide to the world of Pepe Peso ($PESO). How can I help you today? Para continuar, escribe /help.')
+def start(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /start is issued."""
+    user = update.effective_user
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Hola {}! Soy Peso-bot, aquí para ayudarte con $PESO!".format(user.first_name))
 
-# Bot's help prompt
-#'/meme - Get a random meme\n'
-def help(update: Update, context: CallbackContext):
-    update.message.reply_text('Here are commands you can use:\n'
-                              '/tokenomics - Learn about Pepe Peso\'s tokenomics\n'
-                              '/addresses - Get information about associated addresses\n'
-                              '/links - Get links to our website and social media')
+def help_command(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /help is issued."""
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Ayuda para ti!")
 
-# A function to show the tokenomics
-def tokenomics(update: Update, context: CallbackContext):
-    update.message.reply_text("Here's how our $PESO tokenomics work, mi amigo:\n"
-                              "Total Supply: 430,000,000,000,000\n"
-                              "NO TAXES - In honor of the great Mexican Dream.\n"
-                              "80% of our $PESO is in PancakeSwap, stuffed like a well-filled piñata!\n"
-                              "10% is for our hardworking Liquidity Providers. Muchas gracias for your support!\n"
-                              "3% is dedicated to airdrops for community engagement.\n"
-                              "The remaining 7% is for expanding our fiesta to other exchanges, building bridges, and spreading the word about Pepe Peso!\n"
-                              "Initial LP tokens will be burned, like the heat of a habanero.")
+def meme(update: Update, context: CallbackContext) -> None:
+    """Send a meme when the command /meme is issued."""
+    context.bot.send_message(chat_id=update.effective_chat.id, text=random.choice(memes))
 
-# A function to show associated addresses
-def addresses(update: Update, context: CallbackContext):
-    update.message.reply_text("These are our important addresses, compadre:\n"
-                              "Owner Addr: 0xF097802Edd7926C78d4EfFa21fCd27D2146Bd229\n"
-                              "Liq. Airdrops: 0xC543B571FfA82C22F657C35424a208ceAdE43D84\n"
-                              "Comm. Airdrops: 0xcaf2608C3100E234059D0330b73133F86468248E\n"
-                              "CEX Reserve: 0x5815Dce1d0fdc4b9989c48DC69b1d0107cBFFDEf")
+def addresses(update: Update, context: CallbackContext) -> None:
+    """Send the contract addresses."""
+    message = """
+    Owner Addr : 0xF097802Edd7926C78d4EfFa21fCd27D2146Bd229
+    Liq. Airdrops : 0xC543B571FfA82C22F657C35424a208ceAdE43D84
+    Comm. Airdrops : 0xcaf2608C3100b73133F86468248E
+    CEX Reserve : 0x5815Dce1d0fdc4b9989c48DC69b1d0107cBFFDEf
+    """
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
-# A function to send a random meme
-def meme(update: Update, context: CallbackContext):
-    meme_url = random.choice(memes)  # Select a random meme
-    context.bot.send_photo(chat_id=update.effective_chat.id, photo=meme_url)
+def website(update: Update, context: CallbackContext) -> None:
+    """Send the website link."""
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Website: www.pepepeso.vip")
 
-# A function to show links
-def links(update: Update, context: CallbackContext):
-    update.message.reply_text("Check us out, compadre!\n"
-                              "Website: www.pepepeso.vip\n"
-                              "Twitter: https://twitter.com/Pepe_Peso\n"
-                              "Telegram: https://t.me/pepepeso")
+def twitter(update: Update, context: CallbackContext) -> None:
+    """Send the Twitter link."""
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Twitter: https://twitter.com/Pepe_Peso")
 
-# Handlers
+def telegram(update: Update, context: CallbackContext) -> None:
+    """Send the Telegram link."""
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Telegram: https://t.me/pepepeso")
+
 updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('help', help))
-updater.dispatcher.add_handler(CommandHandler('tokenomics', tokenomics))
-updater.dispatcher.add_handler(CommandHandler('addresses', addresses))
+updater.dispatcher.add_handler(CommandHandler('help', help_command))
 updater.dispatcher.add_handler(CommandHandler('meme', meme))
-updater.dispatcher.add_handler(CommandHandler('links', links))
+updater.dispatcher.add_handler(CommandHandler('addresses', addresses))
+updater.dispatcher.add_handler(CommandHandler('website', website))
+updater.dispatcher.add_handler(CommandHandler('twitter', twitter))
+updater.dispatcher.add_handler(CommandHandler('telegram', telegram))
 
-# Run the bot
-updater.start_polling()
-updater.idle()
+async def main():
+    await updater.start_polling()
+
+if __name__ == '__main__':
+    asyncio.run(main())
