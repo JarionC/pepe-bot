@@ -41,7 +41,9 @@ async def telegram(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 def main() -> None:
     application = Application.builder().token("5704485196:AAFCQCxyqm85sI-In90d7FQcJ8qDqWELUSw").build()
 
-    application.add_handler(CommandHandler(["start", "help"], start))
+    application.add_handler(CommandHandler(["start"], start))
+
+    application.add_handler(CommandHandler(["help"], help_command))
     application.add_handler(CommandHandler("meme", meme))
     application.add_handler(CommandHandler("addresses", addresses))
     application.add_handler(CommandHandler("website", website))
