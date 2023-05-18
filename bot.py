@@ -39,7 +39,7 @@ async def telegram(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Join our $PESO community on Telegram, amigo! Here's the link: https://t.me/pepepeso")
 
 def main() -> None:
-    application = Application.builder().token("TOKEN").build()
+    application = Application.builder().token("5704485196:AAFCQCxyqm85sI-In90d7FQcJ8qDqWELUSw").build()
 
     application.add_handler(CommandHandler(["start", "help"], start))
     application.add_handler(CommandHandler("meme", meme))
