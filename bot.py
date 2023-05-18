@@ -3,7 +3,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContex
 import random
 
 # Bot's token
-updater = Updater("5704485196:AAFCQCxyqm85sI-In90d7FQcJ8qDqWELUSw")
+updater = Updater(token="5704485196:AAFCQCxyqm85sI-In90d7FQcJ8qDqWELUSw", use_context=True)
 
 # List of meme URLs
 memes = [
